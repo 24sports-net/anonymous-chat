@@ -9,18 +9,18 @@
 </head>
 <body>
   <div id="login-container">
-    <div class="login-options">
-      <button id="user-mode" class="login-option">USER</button>
-      <button id="admin-mode" class="login-option">ADMIN PANEL</button>
+    <div class="login-buttons">
+      <button id="user-btn">USER</button>
+      <button id="admin-btn">ADMIN PANEL</button>
     </div>
-    <div id="name-login" style="display: none;">
-      <input id="display-name" placeholder="Enter your name" />
-      <button id="enter-chat-btn">Enter Chat</button>
-    </div>
-    <button id="login-btn" style="display:none"><span class="material-icons">login</span> Sign in with Google</button>
   </div>
 
-  <div id="chat-container" style="display: none;">
+  <div id="name-input-box" style="display:none;">
+    <input id="name-input" type="text" placeholder="Enter your name" />
+    <button id="start-chat">Start Chat</button>
+  </div>
+
+  <div id="chat-container" style="display:none;">
     <div id="chat-messages"></div>
 
     <div class="chat-input-area">
