@@ -14,135 +14,81 @@ const db = firebase.database();
 
 const ADMIN_EMAIL = "24sports.social@gmail.com";
 let currentUser = null;
+let isAdmin = false;
 
-const COLORS = ["#7F66FF", "#00C2D1", "#34B7F1", "#25D366", "#C4F800", "#FFD279", "#FF5C9D", "#53BDEB", "#A259FF", "#FF8A3D"];
-let userColors = {};
-
-const loginChoice = document.getElementById("login-choice");
+const loginContainer = document.getElementById("login-container");
 const userBtn = document.getElementById("user-btn");
 const adminBtn = document.getElementById("admin-btn");
-const nameInputContainer = document.getElementById("name-input-container");
-const usernameInput = document.getElementById("username");
-const enterChatBtn = document.getElementById("enter-chat-btn");
+const nameInput = document.getElementById("name-input");
+const nameForm = document.getElementById("name-form");
+
 const chatContainer = document.getElementById("chat-container");
 const chatMessages = document.getElementById("chat-messages");
 const messageInput = document.getElementById("message-input");
 const sendBtn = document.getElementById("send-btn");
 
-let isAdmin = false;
+let replyTo = null;
 
+// --- USER BUTTON ---
 userBtn.onclick = () => {
-  loginChoice.style.display = "none";
-  nameInputContainer.style.display = "flex";
+  nameForm.style.display = "block";
+  userBtn.style.display = "none";
+  adminBtn.style.display = "none";
 };
 
-adminBtn.onclick = () => {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider).then(result => {
-    const user = result.user;
-    if (user.email === ADMIN_EMAIL) {
-      currentUser = {
-        name: user.displayName,
-        email: user.email,
-        photo: user.photoURL || "https://www.gravatar.com/avatar/?d=mp"
-      };
-      isAdmin = true;
-      enterChat();
-    } else {
-      alert("Access Denied: Not an authorized admin.");
-    }
-  });
-};
-
-enterChatBtn.onclick = () => {
-  const name = usernameInput.value.trim();
-  if (!name) return alert("Please enter a name");
+nameForm.onsubmit = (e) => {
+  e.preventDefault();
+  const name = nameInput.value.trim();
+  if (!name) return;
 
   currentUser = {
-    name,
+    displayName: name,
     email: null,
-    photo: "https://www.gravatar.com/avatar/?d=mp"
+    photoURL: null
   };
   isAdmin = false;
-  enterChat();
+  enterChat(currentUser.displayName);
 };
 
-function assignColor(name) {
-  if (!userColors[name]) {
-    userColors[name] = COLORS[Object.keys(userColors).length % COLORS.length];
-  }
-  return userColors[name];
-}
+// --- ADMIN BUTTON ---
+adminBtn.onclick = () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider)
+    .then(result => {
+      if (result.user.email === ADMIN_EMAIL) {
+        currentUser = result.user;
+        isAdmin = true;
+        enterChat(currentUser.displayName);
+      } else {
+        alert("You are not authorized as Admin.");
+        auth.signOut();
+      }
+    })
+    .catch(error => {
+      console.error("Login error:", error);
+    });
+};
 
-function enterChat() {
-  nameInputContainer.style.display = "none";
+function enterChat(name) {
+  loginContainer.style.display = "none";
   chatContainer.style.display = "flex";
 
-  // Show joined message only once
-  const userId = currentUser.email || currentUser.name;
-  db.ref("users/" + userId).once("value", snapshot => {
+  const safeKey = name.replaceAll(".", "_");
+  const userRef = db.ref("users/" + safeKey);
+
+  userRef.once("value").then(snapshot => {
     if (!snapshot.exists()) {
-      db.ref("users/" + userId).set({ joined: true });
+      userRef.set({ hasJoined: true });
       db.ref("messages").push({
         type: "system",
-        text: `${currentUser.name} joined the chat`,
+        text: `${name} joined the chat`,
         timestamp: Date.now()
       });
     }
   });
-
-  db.ref("messages").on("value", snap => {
-    chatMessages.innerHTML = "";
-    snap.forEach(child => {
-      const msg = child.val();
-      const key = child.key;
-
-      const msgEl = document.createElement("div");
-
-      if (msg.type === "system") {
-        msgEl.className = "system-message";
-        msgEl.innerHTML = `<div style="color:gray;">${msg.text}</div>
-          ${isAdmin ? `<span class="material-icons delete-btn" onclick="deleteMessage('${key}')">delete</span>` : ""}
-        `;
-        chatMessages.appendChild(msgEl);
-        return;
-      }
-
-      const sent = currentUser.name === msg.name;
-      const color = msg.email === ADMIN_EMAIL ? "#FF4C4C" : assignColor(msg.name);
-
-      msgEl.className = `message ${sent ? "sent" : "received"}`;
-      msgEl.innerHTML = `
-        <img class="profile-pic" src="${msg.photo}" alt="pfp">
-        <div class="bubble">
-          <div class="name" style="color:${color}">
-            ${msg.name}${msg.email === ADMIN_EMAIL ? '<span class="material-icons admin-verified">verified</span>' : ""}
-          </div>
-          <div>${msg.text}</div>
-          <div class="time">${new Date(msg.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>
-        </div>
-        ${isAdmin ? `<span class="material-icons delete-btn" onclick="deleteMessage('${key}')">delete</span>` : ""}
-      `;
-      chatMessages.appendChild(msgEl);
-    });
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  });
 }
 
-function sendMessage() {
-  const text = messageInput.value.trim();
-  if (!text) return;
-
-  db.ref("messages").push({
-    name: currentUser.name,
-    email: currentUser.email || null,
-    photo: currentUser.photo,
-    text,
-    timestamp: Date.now()
-  });
-  messageInput.value = "";
-}
-
+// --- SEND MESSAGE ---
 sendBtn.onclick = sendMessage;
 messageInput.addEventListener("keydown", e => {
   if (e.key === "Enter" && !e.shiftKey) {
@@ -151,8 +97,87 @@ messageInput.addEventListener("keydown", e => {
   }
 });
 
+function sendMessage() {
+  const text = messageInput.value.trim();
+  if (!text) return;
+
+  const message = {
+    name: currentUser.displayName,
+    email: currentUser.email || null,
+    photo: currentUser.photoURL || "https://www.gravatar.com/avatar/?d=mp",
+    text,
+    timestamp: Date.now(),
+    replyTo: replyTo || null
+  };
+
+  db.ref("messages").push(message);
+  messageInput.value = "";
+  replyTo = null;
+  document.getElementById("reply-preview").style.display = "none";
+}
+
 function deleteMessage(key) {
   if (confirm("Are you sure you want to delete this message?")) {
     db.ref("messages/" + key).remove();
   }
+}
+
+// --- RECEIVE MESSAGES ---
+db.ref("messages").on("value", snapshot => {
+  chatMessages.innerHTML = "";
+  const now = Date.now();
+
+  snapshot.forEach(child => {
+    const msg = child.val();
+    const age = now - msg.timestamp;
+
+    if (age >= 86400000) {
+      db.ref("messages/" + child.key).remove();
+      return;
+    }
+
+    if (msg.type === "system") {
+      const sys = document.createElement("div");
+      sys.className = "system-message";
+      sys.innerHTML = `
+        <div>${msg.text}</div>
+        ${isAdmin ? `<span class="material-icons delete-btn" onclick="deleteMessage('${child.key}')">delete</span>` : ""}
+      `;
+      chatMessages.appendChild(sys);
+      return;
+    }
+
+    const isSent = msg.email === currentUser?.email;
+    const msgEl = document.createElement("div");
+    msgEl.className = `message ${isSent ? "sent" : "received"}`;
+    msgEl.innerHTML = `
+      <img class="profile-pic" src="${msg.photo}" />
+      <div class="bubble">
+        <div class="name" style="color:${isAdminEmail(msg.email) ? '#FF4C4C' : '#00C2D1'}">
+          ${msg.name}${isAdminEmail(msg.email) ? '<span class="material-icons admin-verified">verified</span>' : ''}
+        </div>
+        ${msg.replyTo ? `<div class="reply-to">Replying to: ${msg.replyTo.text}</div>` : ""}
+        <div>${formatText(msg.text)}</div>
+        <div class="time">${new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+      </div>
+      ${isAdmin ? `<span class="material-icons delete-btn" onclick="deleteMessage('${child.key}')">delete</span>` : ""}
+    `;
+    chatMessages.appendChild(msgEl);
+  });
+
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+});
+
+function formatText(text) {
+  return text
+    .replace(/\*_([^*]+)_\*/g, '<b><i>$1</i></b>')
+    .replace(/\*([^*]+)\*/g, '<b>$1</b>')
+    .replace(/_([^_]+)_/g, '<i>$1</i>')
+    .replace(/~([^~]+)~/g, '<s>$1</s>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/@(\w+)/g, '<span style="color:#1DA1F2">@$1</span>');
+}
+
+function isAdminEmail(email) {
+  return email === ADMIN_EMAIL;
 }
