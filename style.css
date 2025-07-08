@@ -1,74 +1,53 @@
 body {
   margin: 0;
-  background: #000;
   font-family: Arial, sans-serif;
-  color: #fff;
+  background: #000;
+  color: white;
+  overflow-x: hidden;
 }
 
 #login-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.login-buttons button {
+  background: #0000ff;
+  color: white;
+  padding: 12px 24px;
+  border: 2px solid white;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.login-buttons button.active {
+  background: red;
+}
+
+#name-input-box {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  height: 100vh;
-  gap: 20px;
-  text-align: center;
+  padding: 40px;
 }
 
-.login-options {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.login-option {
-  padding: 12px 20px;
-  font-size: 16px;
-  border: 2px solid #fff;
-  background: #007BFF;
-  color: #fff;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.login-option.active {
-  background: red;
-  color: white;
-  border: 2px solid white;
-}
-
-#name-login input {
+#name-input {
   padding: 10px;
-  font-size: 14px;
-  border-radius: 6px;
-  border: none;
-  outline: none;
-}
-
-#enter-chat-btn {
-  margin-top: 10px;
-  padding: 10px 16px;
-  font-size: 14px;
-  border-radius: 6px;
-  border: none;
-  background: #00a884;
-  color: white;
-  cursor: pointer;
-}
-
-#login-btn {
-  background: #00a884;
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 6px;
   font-size: 16px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  border-radius: 6px;
+  border: 2px solid white;
+  background: #000;
+  color: white;
 }
 
 #chat-container {
@@ -107,7 +86,6 @@ body {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  margin-top: 4px;
 }
 
 .bubble {
@@ -115,7 +93,6 @@ body {
   padding: 10px 12px;
   border-radius: 12px;
   position: relative;
-  max-width: 100%;
 }
 
 .sent .bubble {
@@ -135,7 +112,7 @@ body {
 
 .admin-verified {
   font-size: 12px;
-  color: #1D9BF0;
+  color: #1DA1F2;
   vertical-align: middle;
   margin-left: 4px;
 }
@@ -169,4 +146,10 @@ body {
   height: 40px;
   color: white;
   cursor: pointer;
+}
+
+.system-message {
+  text-align: center;
+  color: gray;
+  font-size: 12px;
 }
