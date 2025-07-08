@@ -19,63 +19,92 @@ let currentUser = null;
 
 const loginContainer = document.getElementById("login-container");
 const chatContainer = document.getElementById("chat-container");
-const chatMessages = document.getElementById("chat-messages");
-const messageInput = document.getElementById("message-input");
+const loginBtn = document.getElementById("login-btn");
 const sendBtn = document.getElementById("send-btn");
+const messageInput = document.getElementById("message-input");
+const chatMessages = document.getElementById("chat-messages");
 
-document.getElementById("user-login-btn").onclick = () => {
-  document.getElementById("name-entry").style.display = "flex";
+function assignColor(email) {
+  if (!userColors[email]) {
+    userColors[email] = COLORS[Object.keys(userColors).length % COLORS.length];
+  }
+  return userColors[email];
+}
+
+// Restore session
+window.addEventListener("load", () => {
+  const storedUser = JSON.parse(localStorage.getItem("chatUser"));
+  const userType = localStorage.getItem("userType");
+  if (storedUser) {
+    currentUser = storedUser;
+    loginContainer.style.display = "none";
+    chatContainer.style.display = "flex";
+    registerUserJoin(currentUser.displayName);
+    loadMessages();
+  }
+});
+
+// USER mode
+document.getElementById("user-mode").onclick = () => {
+  document.getElementById("user-mode").classList.add("active");
+  document.getElementById("admin-mode").classList.remove("active");
+  document.getElementById("name-login").style.display = "block";
+  document.getElementById("login-btn").style.display = "none";
 };
 
+// ADMIN mode
+document.getElementById("admin-mode").onclick = () => {
+  document.getElementById("admin-mode").classList.add("active");
+  document.getElementById("user-mode").classList.remove("active");
+  document.getElementById("login-btn").style.display = "block";
+  document.getElementById("name-login").style.display = "none";
+};
+
+// Anonymous user entry
 document.getElementById("enter-chat-btn").onclick = () => {
   const name = document.getElementById("display-name").value.trim();
   if (!name) return alert("Enter your name");
+
   currentUser = {
     displayName: name,
     email: null,
     photoURL: "https://www.gravatar.com/avatar/?d=mp"
   };
+
+  localStorage.setItem("chatUser", JSON.stringify(currentUser));
+  localStorage.setItem("userType", "anonymous");
+
   loginContainer.style.display = "none";
   chatContainer.style.display = "flex";
   registerUserJoin(name);
+  loadMessages();
 };
 
-document.getElementById("admin-login-btn").onclick = () => {
+// Google Sign In
+loginBtn.onclick = () => {
   const provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider);
 };
 
 auth.onAuthStateChanged(user => {
   if (user && user.email === ADMIN_EMAIL) {
-    currentUser = user;
+    currentUser = {
+      displayName: user.displayName,
+      email: user.email,
+      photoURL: user.photoURL
+    };
+
+    localStorage.setItem("chatUser", JSON.stringify(currentUser));
+    localStorage.setItem("userType", "admin");
+
     loginContainer.style.display = "none";
     chatContainer.style.display = "flex";
-    registerUserJoin(user.displayName);
+    registerUserJoin(currentUser.displayName);
+    loadMessages();
   }
 });
 
-function assignColor(name) {
-  if (!userColors[name]) {
-    userColors[name] = COLORS[Object.keys(userColors).length % COLORS.length];
-  }
-  return userColors[name];
-}
-
-function registerUserJoin(name) {
-  const userId = btoa(name);
-  const userRef = db.ref("users/" + userId);
-  userRef.once("value").then(snap => {
-    if (!snap.exists()) {
-      userRef.set({ joined: true });
-      db.ref("messages").push({
-        type: "system",
-        text: `${name} joined the chat`,
-        timestamp: Date.now()
-      });
-    }
-  });
-}
-
+// Send message
 sendBtn.onclick = sendMessage;
 messageInput.addEventListener("keydown", e => {
   if (e.key === "Enter" && !e.shiftKey) {
@@ -90,63 +119,86 @@ function sendMessage() {
 
   const isLink = /https?:\/\//i.test(text);
   if (isLink && currentUser.email !== ADMIN_EMAIL) {
-    alert("Links not allowed");
+    alert("Links are not allowed");
     messageInput.value = "";
     return;
   }
 
   const message = {
     name: currentUser.displayName,
-    email: currentUser.email || null,
+    email: currentUser.email,
     photo: currentUser.photoURL,
     text,
-    timestamp: Date.now(),
-    type: "chat"
+    timestamp: Date.now()
   };
 
   db.ref("messages").push(message);
   messageInput.value = "";
 }
 
+function registerUserJoin(name) {
+  const joinedBefore = localStorage.getItem("joined");
+  if (!joinedBefore) {
+    db.ref("messages").push({
+      type: "system",
+      text: `${name} joined the chat`,
+      timestamp: Date.now()
+    });
+    localStorage.setItem("joined", "true");
+  }
+}
+
 function deleteMessage(key) {
-  if (confirm("Are you sure?")) {
+  if (confirm("Are you sure you want to delete this message?")) {
     db.ref("messages/" + key).remove();
   }
 }
 
-db.ref("messages").on("value", snapshot => {
-  chatMessages.innerHTML = "";
-  const now = Date.now();
-  snapshot.forEach(child => {
-    const msg = child.val();
-    const isSent = msg.name === currentUser?.displayName;
-    const isAdmin = msg.email === ADMIN_EMAIL;
+function loadMessages() {
+  db.ref("messages").on("value", snap => {
+    chatMessages.innerHTML = "";
+    const now = Date.now();
 
-    if (msg.type === "system") {
-      const sysMsg = document.createElement("div");
-      sysMsg.className = "message system";
-      sysMsg.innerHTML = `
-        <div class="bubble" style="background:#222;color:#ccc;">${msg.text}</div>
+    snap.forEach(child => {
+      const msg = child.val();
+      const age = now - msg.timestamp;
+
+      if (age >= 86400000) {
+        db.ref("messages/" + child.key).remove();
+        return;
+      }
+
+      if (msg.type === "system") {
+        const msgEl = document.createElement("div");
+        msgEl.className = "system-message";
+        msgEl.innerHTML = `
+          <div>${msg.text}</div>
+          ${currentUser.email === ADMIN_EMAIL ? `<span class="material-icons delete-btn" onclick="deleteMessage('${child.key}')">delete</span>` : ""}
+        `;
+        chatMessages.appendChild(msgEl);
+        return;
+      }
+
+      const isSent = msg.email === currentUser?.email;
+      const isAdmin = msg.email === ADMIN_EMAIL;
+      const nameColor = isAdmin ? "#FF4C4C" : assignColor(msg.email || msg.name);
+
+      const msgEl = document.createElement("div");
+      msgEl.className = `message ${isSent ? "sent" : "received"}`;
+      msgEl.innerHTML = `
+        <img class="profile-pic" src="${msg.photo}" alt="pfp" />
+        <div class="bubble">
+          <div class="name" style="color:${nameColor}">
+            ${msg.name}${isAdmin ? ' <span class="material-icons admin-verified">verified</span>' : ""}
+          </div>
+          <div>${msg.text}</div>
+          <div class="time">${new Date(msg.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>
+        </div>
         ${currentUser.email === ADMIN_EMAIL ? `<span class="material-icons delete-btn" onclick="deleteMessage('${child.key}')">delete</span>` : ""}
       `;
-      chatMessages.appendChild(sysMsg);
-      return;
-    }
+      chatMessages.appendChild(msgEl);
+    });
 
-    const msgEl = document.createElement("div");
-    msgEl.className = `message ${isSent ? "sent" : "received"}`;
-    msgEl.innerHTML = `
-      <img class="profile-pic" src="${msg.photo}" alt="pfp" />
-      <div class="bubble">
-        <div class="name" style="color:${isAdmin ? "#FF4C4C" : assignColor(msg.name)}">
-          ${msg.name}${isAdmin ? ' <span class="material-icons admin-verified">verified</span>' : ""}
-        </div>
-        <div>${msg.text}</div>
-        <div class="time">${new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
-      </div>
-      ${currentUser.email === ADMIN_EMAIL ? `<span class="material-icons delete-btn" onclick="deleteMessage('${child.key}')">delete</span>` : ""}
-    `;
-    chatMessages.appendChild(msgEl);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
   });
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-});
+}
