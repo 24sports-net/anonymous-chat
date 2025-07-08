@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>24Sports Chat</title>
+  <title>24Sports Live Chat</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-
   <div id="login-container">
-    <h2>Select Login Mode</h2>
-    <button id="user-login-btn">User</button>
-    <button id="admin-login-btn">Admin Panel</button>
-
-    <div id="name-entry" style="display:none;">
-      <input type="text" id="display-name" placeholder="Enter your name" />
+    <div class="login-options">
+      <button id="user-mode" class="login-option">USER</button>
+      <button id="admin-mode" class="login-option">ADMIN PANEL</button>
+    </div>
+    <div id="name-login" style="display: none;">
+      <input id="display-name" placeholder="Enter your name" />
       <button id="enter-chat-btn">Enter Chat</button>
     </div>
+    <button id="login-btn" style="display:none"><span class="material-icons">login</span> Sign in with Google</button>
   </div>
 
   <div id="chat-container" style="display: none;">
@@ -29,7 +29,6 @@
     </div>
   </div>
 
-  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
