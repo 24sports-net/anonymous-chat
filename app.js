@@ -35,11 +35,18 @@ function assignColor(email) {
 window.addEventListener("load", () => {
   const storedUser = JSON.parse(localStorage.getItem("chatUser"));
   const userType = localStorage.getItem("userType");
+
   if (storedUser) {
     currentUser = storedUser;
     loginContainer.style.display = "none";
     chatContainer.style.display = "flex";
-    registerUserJoin(currentUser.displayName);
+    
+    if (!localStorage.getItem("joined")) {
+      registerUserJoin(currentUser.displayName);
+      localStorage.setItem("joined", "true");
+    }
+
+    // ✅ Always load messages regardless of login type
     loadMessages();
   }
 });
