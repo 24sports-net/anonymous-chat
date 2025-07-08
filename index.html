@@ -3,23 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>24Sports Anonymous Chat</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>24SPN Live Chat</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="login-choice">
-    <button id="user-btn">USER</button>
-    <button id="admin-btn">ADMIN PANEL</button>
+  <div id="login-container">
+    <div class="login-buttons">
+      <button id="user-btn">USER</button>
+      <button id="admin-btn">ADMIN PANEL</button>
+    </div>
+    <form id="name-form" style="display: none;">
+      <input type="text" id="name-input" placeholder="Enter your name" required />
+      <button type="submit">Join Chat</button>
+    </form>
   </div>
 
-  <div id="name-input-container" style="display:none;">
-    <input type="text" id="username" placeholder="Enter your name"/>
-    <button id="enter-chat-btn">Enter Chat</button>
-  </div>
-
-  <div id="chat-container" style="display:none;">
+  <div id="chat-container" style="display: none;">
     <div id="chat-messages"></div>
+
+    <div id="reply-preview" class="reply-preview" style="display: none;">
+      Replying to <span id="reply-to-name"></span>: <span id="reply-to-text"></span>
+      <span class="material-icons close-reply" onclick="cancelReply()">close</span>
+    </div>
 
     <div class="chat-input-area">
       <textarea id="message-input" placeholder="Type a message..."></textarea>
