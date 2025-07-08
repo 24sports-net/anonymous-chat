@@ -9,31 +9,64 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 const db = firebase.database();
 
-const ADMIN_NAMES = ["Admin"]; // You can replace this with admin names
+const ADMIN_EMAIL = "24sports.social@gmail.com";
 const COLORS = ["#7F66FF", "#00C2D1", "#34B7F1", "#25D366", "#C4F800", "#FFD279", "#FF5C9D", "#53BDEB", "#A259FF", "#FF8A3D"];
 let userColors = {};
 let currentUser = null;
-let replyTo = null;
 
-const nameInput = document.getElementById("name-input");
-const nameSubmitBtn = document.getElementById("name-submit-btn");
+const loginContainer = document.getElementById("login-container");
+const chatContainer = document.getElementById("chat-container");
 const chatMessages = document.getElementById("chat-messages");
 const messageInput = document.getElementById("message-input");
 const sendBtn = document.getElementById("send-btn");
 
-nameSubmitBtn.onclick = () => {
-  const name = nameInput.value.trim();
-  if (!name) return alert("Please enter your name.");
-  currentUser = { displayName: name, photoURL: "", email: name + "@anon" };
-  document.getElementById("login-container").style.display = "none";
-  document.getElementById("chat-container").style.display = "flex";
+document.getElementById("user-login-btn").onclick = () => {
+  document.getElementById("name-entry").style.display = "flex";
+};
 
-  const userRef = db.ref("users/" + name);
-  userRef.once("value").then(snapshot => {
-    if (!snapshot.exists()) {
-      userRef.set({ hasJoined: true });
+document.getElementById("enter-chat-btn").onclick = () => {
+  const name = document.getElementById("display-name").value.trim();
+  if (!name) return alert("Enter your name");
+  currentUser = {
+    displayName: name,
+    email: null,
+    photoURL: "https://www.gravatar.com/avatar/?d=mp"
+  };
+  loginContainer.style.display = "none";
+  chatContainer.style.display = "flex";
+  registerUserJoin(name);
+};
+
+document.getElementById("admin-login-btn").onclick = () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider);
+};
+
+auth.onAuthStateChanged(user => {
+  if (user && user.email === ADMIN_EMAIL) {
+    currentUser = user;
+    loginContainer.style.display = "none";
+    chatContainer.style.display = "flex";
+    registerUserJoin(user.displayName);
+  }
+});
+
+function assignColor(name) {
+  if (!userColors[name]) {
+    userColors[name] = COLORS[Object.keys(userColors).length % COLORS.length];
+  }
+  return userColors[name];
+}
+
+function registerUserJoin(name) {
+  const userId = btoa(name);
+  const userRef = db.ref("users/" + userId);
+  userRef.once("value").then(snap => {
+    if (!snap.exists()) {
+      userRef.set({ joined: true });
       db.ref("messages").push({
         type: "system",
         text: `${name} joined the chat`,
@@ -41,7 +74,7 @@ nameSubmitBtn.onclick = () => {
       });
     }
   });
-};
+}
 
 sendBtn.onclick = sendMessage;
 messageInput.addEventListener("keydown", e => {
@@ -51,111 +84,68 @@ messageInput.addEventListener("keydown", e => {
   }
 });
 
-function assignColor(email) {
-  if (!userColors[email]) {
-    userColors[email] = COLORS[Object.keys(userColors).length % COLORS.length];
-  }
-  return userColors[email];
-}
-
-function formatMessage(text) {
-  return text
-    .replace(/\*_([^*]+)_\*/g, '<b><i>$1</i></b>')
-    .replace(/\*([^*]+)\*/g, '<b>$1</b>')
-    .replace(/_([^_]+)_/g, '<i>$1</i>')
-    .replace(/{([^}]+)}/g, '<span style="background:yellow;color:black;padding:2px 4px;border-radius:3px;">$1</span>')
-    .replace(/~([^~]+)~/g, '<s>$1</s>')
-    .replace(/`([^`]+)`/g, '<code style="background:#222;padding:2px 4px;border-radius:4px;">$1</code>')
-    .replace(/@(\w+)/g, '<span style="color:#1DA1F2">@$1</span>');
-}
-
 function sendMessage() {
   const text = messageInput.value.trim();
   if (!text) return;
 
-  if (/https?:\/\//i.test(text)) {
-    alert("Links are not allowed");
+  const isLink = /https?:\/\//i.test(text);
+  if (isLink && currentUser.email !== ADMIN_EMAIL) {
+    alert("Links not allowed");
     messageInput.value = "";
     return;
   }
 
   const message = {
     name: currentUser.displayName,
-    email: currentUser.email,
-    photo: currentUser.photoURL || "https://www.gravatar.com/avatar/?d=mp",
+    email: currentUser.email || null,
+    photo: currentUser.photoURL,
     text,
     timestamp: Date.now(),
-    replyTo: replyTo || null
+    type: "chat"
   };
+
   db.ref("messages").push(message);
   messageInput.value = "";
-  replyTo = null;
-  document.getElementById("reply-preview").style.display = "none";
-}
-
-function cancelReply() {
-  replyTo = null;
-  document.getElementById("reply-preview").style.display = "none";
 }
 
 function deleteMessage(key) {
-  if (confirm("Are you sure you want to delete this message?")) {
+  if (confirm("Are you sure?")) {
     db.ref("messages/" + key).remove();
   }
 }
 
-db.ref("messages").on("value", snap => {
+db.ref("messages").on("value", snapshot => {
   chatMessages.innerHTML = "";
   const now = Date.now();
-  snap.forEach(child => {
+  snapshot.forEach(child => {
     const msg = child.val();
-    const age = now - msg.timestamp;
-
-    if (age >= 86400000) {
-      db.ref("messages/" + child.key).remove();
-      return;
-    }
+    const isSent = msg.name === currentUser?.displayName;
+    const isAdmin = msg.email === ADMIN_EMAIL;
 
     if (msg.type === "system") {
-      const msgEl = document.createElement("div");
-      msgEl.className = "system-message";
-      msgEl.innerHTML = `
-        <div>${msg.text}</div>
-        ${ADMIN_NAMES.includes(currentUser.displayName) ? `<span class="material-icons delete-btn" onclick="deleteMessage('${child.key}')">delete</span>` : ""}
+      const sysMsg = document.createElement("div");
+      sysMsg.className = "message system";
+      sysMsg.innerHTML = `
+        <div class="bubble" style="background:#222;color:#ccc;">${msg.text}</div>
+        ${currentUser.email === ADMIN_EMAIL ? `<span class="material-icons delete-btn" onclick="deleteMessage('${child.key}')">delete</span>` : ""}
       `;
-      chatMessages.appendChild(msgEl);
+      chatMessages.appendChild(sysMsg);
       return;
     }
-
-    const isSent = msg.email === currentUser.email;
-    const isAdmin = ADMIN_NAMES.includes(msg.name);
-    const nameColor = isAdmin ? "#FF4C4C" : assignColor(msg.email);
 
     const msgEl = document.createElement("div");
     msgEl.className = `message ${isSent ? "sent" : "received"}`;
     msgEl.innerHTML = `
       <img class="profile-pic" src="${msg.photo}" alt="pfp" />
       <div class="bubble">
-        <div class="name" style="color:${nameColor}">
+        <div class="name" style="color:${isAdmin ? "#FF4C4C" : assignColor(msg.name)}">
           ${msg.name}${isAdmin ? ' <span class="material-icons admin-verified">verified</span>' : ""}
         </div>
-        ${msg.replyTo ? `<div class="reply-to">Replying to: ${msg.replyTo.text}</div>` : ""}
-        <div>${formatMessage(msg.text)}</div>
-        <div class="time">${new Date(msg.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>
+        <div>${msg.text}</div>
+        <div class="time">${new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
       </div>
-      ${isAdmin ? `<span class="material-icons delete-btn" onclick="deleteMessage('${child.key}')">delete</span>` : ""}
+      ${currentUser.email === ADMIN_EMAIL ? `<span class="material-icons delete-btn" onclick="deleteMessage('${child.key}')">delete</span>` : ""}
     `;
-
-    msgEl.ondblclick = () => {
-      replyTo = {
-        name: msg.name,
-        text: msg.text
-      };
-      document.getElementById("reply-to-name").innerText = msg.name;
-      document.getElementById("reply-to-text").innerText = msg.text;
-      document.getElementById("reply-preview").style.display = "block";
-    };
-
     chatMessages.appendChild(msgEl);
   });
   chatMessages.scrollTop = chatMessages.scrollHeight;
