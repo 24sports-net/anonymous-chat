@@ -1,0 +1,169 @@
+body {
+  margin: 0;
+  background: #000;
+  font-family: Arial, sans-serif;
+  color: #fff;
+}
+
+#login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  gap: 12px;
+}
+
+#name-input {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: none;
+  width: 70%;
+}
+
+#name-submit-btn {
+  background: #00a884;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+#chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.message {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  max-width: 80%;
+  position: relative;
+}
+
+.message.sent {
+  flex-direction: row-reverse;
+  align-self: flex-end;
+}
+
+.message.received {
+  align-self: flex-start;
+}
+
+.profile-pic {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin-top: 4px;
+}
+
+.bubble {
+  background: #1f272a;
+  padding: 10px 12px;
+  border-radius: 12px;
+  position: relative;
+  max-width: 100%;
+}
+
+.sent .bubble {
+  background: #134333;
+}
+
+.name {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.time {
+  font-size: 10px;
+  color: #999;
+  text-align: right;
+}
+
+.admin-verified {
+  font-size: 10px;
+  color: #1D9BF0;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+.chat-input-area {
+  display: flex;
+  padding: 10px;
+  background: #111;
+  border-top: 1px solid #333;
+  gap: 10px;
+  align-items: center;
+}
+
+.chat-input-area textarea {
+  flex: 1;
+  resize: none;
+  padding: 10px;
+  border-radius: 20px;
+  border: 2px solid red;
+  outline: none;
+  font-size: 14px;
+  background: #000;
+  color: #fff;
+}
+
+.chat-input-area button {
+  background: #121133;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  color: white;
+  cursor: pointer;
+}
+
+.reply-preview {
+  padding: 8px 12px;
+  background: #222;
+  font-size: 12px;
+  border-left: 3px solid #00a884;
+  margin: 0 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #aaa;
+}
+
+.reply-preview .close-reply {
+  font-size: 16px;
+  cursor: pointer;
+  color: #fff;
+}
+
+.delete-btn {
+  position: absolute;
+  bottom: -20px;
+  left: 36px;
+  color: red;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.system-message {
+  text-align: center;
+  font-size: 13px;
+  color: #ccc;
+}
