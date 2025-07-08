@@ -3,23 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>24Sports Live Chat</title>
+  <title>24Sports Chat</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
+
   <div id="login-container">
-    <input type="text" id="name-input" placeholder="Enter your name" />
-    <button id="name-submit-btn"><span class="material-icons">login</span> Join Chat</button>
+    <h2>Select Login Mode</h2>
+    <button id="user-login-btn">User</button>
+    <button id="admin-login-btn">Admin Panel</button>
+
+    <div id="name-entry" style="display:none;">
+      <input type="text" id="display-name" placeholder="Enter your name" />
+      <button id="enter-chat-btn">Enter Chat</button>
+    </div>
   </div>
 
   <div id="chat-container" style="display: none;">
     <div id="chat-messages"></div>
-
-    <div id="reply-preview" class="reply-preview" style="display: none;">
-      Replying to <span id="reply-to-name"></span>: <span id="reply-to-text"></span>
-      <span class="material-icons close-reply" onclick="cancelReply()">close</span>
-    </div>
 
     <div class="chat-input-area">
       <textarea id="message-input" placeholder="Type a message..."></textarea>
@@ -27,7 +29,9 @@
     </div>
   </div>
 
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
   <script src="app.js"></script>
 </body>
