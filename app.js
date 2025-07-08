@@ -74,7 +74,8 @@ auth.onAuthStateChanged((user) => {
     sendJoinMessage();
     loadMessages();
   }
-};
+});
+
 function assignColor(name) {
   if (!userColors[name]) {
     userColors[name] = COLORS[Object.keys(userColors).length % COLORS.length];
