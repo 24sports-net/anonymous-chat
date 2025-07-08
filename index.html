@@ -3,21 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>24Sports Live Chat</title>
+  <title>24Sports Anonymous Chat</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-  <div id="login-container">
-    <div class="login-buttons">
-      <button id="user-btn">USER</button>
-      <button id="admin-btn">ADMIN PANEL</button>
-    </div>
+  <div id="login-choice">
+    <button id="user-btn">USER</button>
+    <button id="admin-btn">ADMIN PANEL</button>
   </div>
 
-  <div id="name-input-box" style="display:none;">
-    <input id="name-input" type="text" placeholder="Enter your name" />
-    <button id="start-chat">Start Chat</button>
+  <div id="name-input-container" style="display:none;">
+    <input type="text" id="username" placeholder="Enter your name"/>
+    <button id="enter-chat-btn">Enter Chat</button>
   </div>
 
   <div id="chat-container" style="display:none;">
@@ -29,6 +27,7 @@
     </div>
   </div>
 
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
