@@ -8,26 +8,42 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-  <div id="login-options">
-    <button id="user-btn">USER</button>
-    <button id="admin-btn">ADMIN PANEL</button>
+  <div id="role-selection">
+    <button class="role-btn" onclick="selectRole('user')">
+      <span class="material-icons">account_circle</span> USER
+    </button>
+    <button class="role-btn" onclick="selectRole('admin')">
+      <span class="material-icons">admin_panel_settings</span> ADMIN PANEL
+    </button>
   </div>
 
-  <div id="name-input-container" style="display:none;">
-    <input id="name-input" placeholder="Enter your name" />
-    <button id="enter-chat-btn">Enter Chat</button>
+  <div id="user-login" style="display:none;">
+    <input id="username-input" placeholder="Enter your name" />
+    <div class="user-btns">
+      <button onclick="enterChat()">
+        <span class="material-icons">person_check</span> ENTER CHAT
+      </button>
+      <button onclick="goBack()">
+        <span class="material-icons">home</span> GO BACK
+      </button>
+    </div>
   </div>
 
-  <div id="login-container" style="display:none;">
-    <button id="login-btn"><span class="material-icons">login</span> Sign in with Google</button>
+  <div id="admin-login" style="display:none;">
+    <button id="admin-login-btn">
+      <span class="material-icons">account_box</span> SIGN IN WITH GOOGLE
+    </button>
+    <button onclick="goBack()">
+      <span class="material-icons">home</span> GO BACK
+    </button>
   </div>
 
-  <div id="chat-container" style="display: none;">
+  <div id="chat-container" style="display:none;">
     <div id="chat-messages"></div>
 
-    <div id="reply-preview" class="reply-preview" style="display: none;">
+    <div id="reply-preview" style="display:none;">
       Replying to <span id="reply-to-name"></span>: <span id="reply-to-text"></span>
-      <span class="material-icons close-reply" onclick="cancelReply()">close</span>
+      <span class="material-icons" onclick="cancelReply()">close</span>
     </div>
 
     <div class="chat-input-area">
