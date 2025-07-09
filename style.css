@@ -1,89 +1,85 @@
-/* General Reset */
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
   background: #000;
+  font-family: Arial, sans-serif;
   color: #fff;
   overflow: hidden;
 }
 
-button {
+#role-selection {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-wrap: wrap;
+}
+
+.role-btn {
+  background-color: #001F54;
+  color: #fff;
+  border: 2px solid white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.material-icons {
-  vertical-align: middle;
-}
-
-/* Role Selection */
-#role-selection {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  padding: 100px 20px;
-  flex-wrap: wrap;
-}
-
-#role-selection button,
-#google-login,
-#enter-chat,
-.go-back {
-  background-color: #001f3f;
-  border: 2px solid white;
-  color: white;
-  padding: 12px 18px;
-  font-size: 16px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-#role-selection button.active,
-#google-login.active,
-#enter-chat.active {
+.role-btn.clicked {
   background-color: red;
-  box-shadow: 0 0 8px red;
+  box-shadow: 0 0 10px red;
 }
 
-/* Login Inputs */
-#user-login,
-#admin-login {
-  text-align: center;
-  padding: 60px 20px;
+#username-entry, #admin-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20vh;
+  gap: 20px;
 }
 
-#username {
-  padding: 10px;
+#username-input {
+  padding: 12px 20px;
   font-size: 16px;
   border: 2px solid yellow;
-  border-radius: 8px;
+  border-radius: 6px;
   outline: none;
-  background: #000;
-  color: #fff;
-  width: 80%;
-  max-width: 300px;
-  margin-bottom: 20px;
-  box-shadow: 0 0 5px yellow;
+  background: #111;
+  color: white;
+  box-shadow: 0 0 10px yellow;
 }
 
-/* Login Buttons Group */
-.login-buttons {
+.entry-buttons {
   display: flex;
-  justify-content: center;
-  gap: 12px;
+  gap: 16px;
   flex-wrap: wrap;
 }
 
-/* Chat Container */
+#enter-chat-btn, #back-to-role-user, #admin-login-btn, #back-to-role-admin {
+  background-color: #001F54;
+  color: #fff;
+  border: 2px solid white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
 #chat-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
 
-/* Chat Messages */
 #chat-messages {
   flex: 1;
   overflow-y: auto;
@@ -92,9 +88,9 @@ button {
   flex-direction: column;
   gap: 12px;
   scroll-behavior: smooth;
+  overscroll-behavior-y: contain;
 }
 
-/* Message Layout */
 .message {
   display: flex;
   align-items: flex-start;
@@ -120,35 +116,24 @@ button {
   margin-top: 4px;
 }
 
-/* Message Bubble */
 .bubble {
   background: #1f272a;
   padding: 10px 12px;
   border-radius: 12px;
-  position: relative;
   max-width: 100%;
-  white-space: pre-wrap;
+  position: relative;
 }
 
 .sent .bubble {
   background: #134333;
 }
 
-/* Name & Verified Icon */
 .name {
   font-weight: bold;
   margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.admin-verified {
   font-size: 14px;
-  color: #1D9BF0;
 }
 
-/* Time Stamp */
 .time {
   font-size: 10px;
   color: #999;
@@ -156,7 +141,24 @@ button {
   margin-top: 4px;
 }
 
-/* Input Area */
+.admin-verified {
+  font-size: 14px;
+  color: #1D9BF0;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+.reply-to {
+  font-size: 12px;
+  color: #ccc;
+  padding: 4px;
+  background: #2a2a2a;
+  border-left: 3px solid #00a884;
+  margin-bottom: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
 .chat-input-area {
   display: flex;
   padding: 10px;
@@ -164,7 +166,6 @@ button {
   border-top: 1px solid #333;
   gap: 10px;
   align-items: center;
-  position: relative;
 }
 
 .chat-input-area textarea {
@@ -177,11 +178,12 @@ button {
   font-size: 14px;
   background: #000;
   color: #fff;
-  max-height: 100px;
+  height: 40px;
+  max-height: 80px;
 }
 
 .chat-input-area button {
-  background: green;
+  background: #25D366;
   border: none;
   border-radius: 50%;
   width: 40px;
@@ -190,7 +192,6 @@ button {
   cursor: pointer;
 }
 
-/* Reply Preview */
 .reply-preview {
   padding: 8px 12px;
   background: #222;
@@ -209,37 +210,18 @@ button {
   color: #fff;
 }
 
-/* Typing Indicator */
-#typing-indicator {
+.system-message {
   font-size: 12px;
   color: #aaa;
-  margin-left: 16px;
-  margin-bottom: 4px;
-}
-
-/* System Message */
-.system-message {
   text-align: center;
-  color: #999;
-  font-size: 12px;
   position: relative;
 }
 
-/* Delete Icon */
 .delete-btn {
-  position: absolute;
-  bottom: -14px;
-  right: 0;
+  position: relative;
+  top: 4px;
   color: red;
   cursor: pointer;
   font-size: 18px;
-}
-
-/* Scrollbar styling (optional) */
-#chat-messages::-webkit-scrollbar {
-  width: 6px;
-}
-#chat-messages::-webkit-scrollbar-thumb {
-  background: #444;
-  border-radius: 4px;
+  margin-left: 4px;
 }
