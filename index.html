@@ -5,46 +5,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>24Sports Live Chat</title>
   <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 </head>
 <body>
-  <div id="login-selection">
-    <button id="user-btn"><span class="material-icons">account_circle</span> USER</button>
-    <button id="admin-btn"><span class="material-icons">admin_panel_settings</span> ADMIN PANEL</button>
+  <!-- Role Selection -->
+  <div id="role-selection">
+    <button id="user-mode"><span class="material-icons">account_circle</span> USER</button>
+    <button id="admin-mode"><span class="material-icons">admin_panel_settings</span> ADMIN PANEL</button>
   </div>
 
-  <div id="user-login" class="hidden">
-    <input type="text" id="username-input" placeholder="Enter your name" />
-    <div class="user-controls">
+  <!-- User Login -->
+  <div id="user-login" style="display:none;">
+    <input type="text" id="username" placeholder="Enter your name" />
+    <div class="login-buttons">
       <button id="enter-chat"><span class="material-icons">person_check</span> Enter Chat</button>
-      <button id="go-back-user"><span class="material-icons">home</span> Go Back</button>
+      <button class="go-back"><span class="material-icons">home</span> Go Back</button>
     </div>
   </div>
 
-  <div id="admin-login" class="hidden">
+  <!-- Admin Login -->
+  <div id="admin-login" style="display:none;">
     <button id="google-login"><span class="material-icons">account_box</span> Sign in with Google</button>
-    <button id="go-back-admin"><span class="material-icons">home</span> Go Back</button>
+    <button class="go-back"><span class="material-icons">home</span> Go Back</button>
   </div>
 
-  <div id="chat-container" class="hidden">
+  <!-- Chat Container -->
+  <div id="chat-container" style="display: none;">
     <div id="chat-messages"></div>
 
-    <div id="reply-preview" class="reply-preview hidden">
+    <!-- Reply Preview Box -->
+    <div id="reply-preview" class="reply-preview" style="display: none;">
       Replying to <span id="reply-to-name"></span>: <span id="reply-to-text"></span>
       <span class="material-icons close-reply" onclick="cancelReply()">close</span>
     </div>
 
-    <div id="typing-indicator" class="typing-indicator"></div>
+    <!-- Typing Indicator -->
+    <div id="typing-indicator" style="display:none;">Someone is typing...</div>
 
+    <!-- Input Area -->
     <div class="chat-input-area">
       <textarea id="message-input" placeholder="Type a message..."></textarea>
       <button id="send-btn"><span class="material-icons">send</span></button>
     </div>
   </div>
 
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+
+  <!-- Main App Script -->
   <script src="app.js"></script>
 </body>
 </html>
