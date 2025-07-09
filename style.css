@@ -1,79 +1,83 @@
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
   background: #000;
+  font-family: Arial, sans-serif;
   color: #fff;
 }
 
-button {
-  cursor: pointer;
+.hidden {
+  display: none;
 }
 
-.material-icons {
-  vertical-align: middle;
-}
-
-#choice-container {
+#login-screen {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
   height: 100vh;
-  gap: 20px;
-  flex-wrap: wrap;
+  padding: 20px;
 }
 
-.choice-btn {
-  padding: 12px 20px;
+#role-selection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+#role-selection button {
+  background: #001F3F;
   border: 2px solid white;
-  background: #001f5c;
   color: white;
+  padding: 12px 20px;
   font-size: 16px;
   border-radius: 6px;
-  transition: 0.3s;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.choice-btn:active {
-  background: #d32f2f;
-  box-shadow: 0 0 10px red;
+#role-selection button.active {
+  background: red;
+  border-color: white;
+  color: white;
+  box-shadow: 0 0 8px red;
+}
+
+#user-login,
+#admin-login {
+  margin-top: 20px;
+  text-align: center;
 }
 
 #username-input {
-  margin: 20px auto;
-  display: block;
   padding: 10px;
-  font-size: 16px;
-  border: 2px solid yellow;
   border-radius: 6px;
+  border: 2px solid yellow;
+  background: black;
+  color: white;
   outline: none;
-  background: #111;
-  color: #fff;
-  box-shadow: 0 0 5px yellow;
+  width: 220px;
 }
 
-.user-login-buttons {
+.login-actions {
+  margin-top: 10px;
   display: flex;
   justify-content: center;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
-.user-login-buttons button {
-  background: #001f5c;
-  border: 2px solid white;
+.login-actions button {
+  background: #001F3F;
   color: white;
+  border: 2px solid white;
   padding: 10px 16px;
   border-radius: 6px;
-  font-size: 14px;
   display: flex;
   align-items: center;
   gap: 6px;
-}
-
-.user-login-buttons button:active {
-  background: #d32f2f;
-  box-shadow: 0 0 10px red;
+  cursor: pointer;
 }
 
 #chat-container {
@@ -85,26 +89,26 @@ button {
 #chat-messages {
   flex: 1;
   overflow-y: auto;
-  padding: 10px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .message {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 8px;
   max-width: 80%;
   position: relative;
 }
 
-.sent {
+.message.sent {
   flex-direction: row-reverse;
   align-self: flex-end;
 }
 
-.received {
+.message.received {
   align-self: flex-start;
 }
 
@@ -119,6 +123,7 @@ button {
   background: #1f272a;
   padding: 10px 12px;
   border-radius: 12px;
+  position: relative;
   max-width: 100%;
 }
 
@@ -140,6 +145,7 @@ button {
 .admin-verified {
   font-size: 12px;
   color: #1D9BF0;
+  vertical-align: middle;
   margin-left: 4px;
 }
 
@@ -171,13 +177,49 @@ button {
   width: 40px;
   height: 40px;
   color: white;
+  cursor: pointer;
 }
 
 .reply-preview {
+  padding: 8px 12px;
   background: #222;
-  color: #aaa;
-  padding: 6px 12px;
+  font-size: 12px;
   border-left: 3px solid #00a884;
   margin: 0 10px;
-  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #aaa;
+}
+
+.reply-preview .close-reply {
+  font-size: 16px;
+  cursor: pointer;
+  color: #fff;
+}
+
+.typing-indicator {
+  padding: 6px 12px;
+  font-size: 13px;
+  color: #aaa;
+  background-color: #111;
+  border-top: 1px solid #333;
+  font-style: italic;
+}
+
+.delete-btn {
+  position: absolute;
+  left: 36px;
+  bottom: -14px;
+  font-size: 16px;
+  color: red;
+  cursor: pointer;
+}
+
+.system-message {
+  font-style: italic;
+  color: gray;
+  text-align: center;
+  font-size: 13px;
+  position: relative;
 }
