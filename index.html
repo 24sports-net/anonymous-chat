@@ -3,72 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>24Sports Live Chat</title>
+  <title>24Sports Anonymous Chat</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-  <!-- Initial Role Selection -->
   <div id="role-selection">
-    <button id="user-btn" class="role-btn">
-      <span class="material-icons">account_circle</span> USER
-    </button>
-    <button id="admin-btn" class="role-btn">
-      <span class="material-icons">admin_panel_settings</span> ADMIN PANEL
-    </button>
+    <button id="user-btn" class="role-btn"><span class="material-icons">account_circle</span> USER</button>
+    <button id="admin-btn" class="role-btn"><span class="material-icons">admin_panel_settings</span> ADMIN PANEL</button>
   </div>
 
-  <!-- USER NAME ENTRY -->
-  <div id="username-entry" style="display: none;">
+  <div id="user-login" style="display: none;">
     <input type="text" id="username-input" placeholder="Enter your name" />
-    <div class="entry-buttons">
-      <button id="enter-chat-btn">
-        <span class="material-icons">person_check</span> ENTER CHAT
-      </button>
-      <button id="back-to-role-user">
-        <span class="material-icons">home</span> GO BACK
-      </button>
+    <div class="login-actions">
+      <button id="enter-chat-btn"><span class="material-icons">person_check</span> ENTER CHAT</button>
+      <button id="back-btn-user"><span class="material-icons">home</span> GO BACK</button>
     </div>
   </div>
 
-  <!-- ADMIN LOGIN -->
   <div id="admin-login" style="display: none;">
-    <button id="admin-login-btn">
-      <span class="material-icons">account_box</span> SIGN IN WITH GOOGLE
-    </button>
-    <button id="back-to-role-admin">
-      <span class="material-icons">home</span> GO BACK
-    </button>
+    <button id="google-login-btn"><span class="material-icons">account_box</span> SIGN IN WITH GOOGLE</button>
+    <button id="back-btn-admin"><span class="material-icons">home</span> GO BACK</button>
   </div>
 
-  <!-- MAIN CHAT CONTAINER -->
   <div id="chat-container" style="display: none;">
     <div id="chat-messages"></div>
 
-    <!-- Reply Tag Preview -->
     <div id="reply-preview" class="reply-preview" style="display: none;">
       Replying to <span id="reply-to-name"></span>: <span id="reply-to-text"></span>
       <span class="material-icons close-reply" onclick="cancelReply()">close</span>
     </div>
 
-    <!-- Typing Indicator -->
-    <div id="typing-indicator" style="display: none; font-size: 12px; padding: 0 12px; color: #aaa;">
-      Someone is typing...
-    </div>
-
-    <!-- Chat Input -->
     <div class="chat-input-area">
       <textarea id="message-input" placeholder="Type a message..."></textarea>
       <button id="send-btn"><span class="material-icons">send</span></button>
     </div>
   </div>
 
-  <!-- Firebase Scripts -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
-  
-  <!-- Your App -->
   <script src="app.js"></script>
 </body>
 </html>
